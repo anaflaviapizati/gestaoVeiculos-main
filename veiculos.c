@@ -247,49 +247,35 @@ void ordenarVeiculosPorPlaca() {
         return;
     }
 
-    FILE *original = fopen("veiculos.dat", "rb");
-    FILE *ordenado = fopen("ordenado_veiculos.dat", "wb+");
-    if (!original || !ordenado) {
-        if (original) fclose(original);
-        if (ordenado) fclose(ordenado);
-        printf("Erro ao abrir arquivos para ordenacao\n");
+
+    FILE *original = fopen("veiculos.dat", "rb+");
+    if (!original) {
+        printf("Erro ao abrir arquivo para ordenacao\n");
         return;
     }
 
-    int *usados = calloc(total, sizeof(int));
-    if (!usados) {
-        fclose(original);
-        fclose(ordenado);
-        printf("Erro de memoria\n");
-        return;
-    }
-
-    for (int i = 0; i < total; i++) {
-        Veiculo menor;
-        long posMenor = -1;
-
-        for (int j = 0; j < total; j++) {
-            if (usados[j]) continue;
-
-            Veiculo atual;
-            fseek(original, j * sizeof(Veiculo), SEEK_SET);
-            fread(&atual, sizeof(Veiculo), 1, original);
-
-            if (posMenor == -1 || strcmp(atual.placa, menor.placa) < 0) {
-                menor = atual;
-                posMenor = j;
+    Veiculo v1, v2;
+    int trocou;
+    
+    do {
+        trocou = 0;
+        rewind(original);
+        
+        for (int i = 0; i < total - 1; i++) {
+            fseek(original, i * sizeof(Veiculo), SEEK_SET);
+            fread(&v1, sizeof(Veiculo), 1, original);
+            fread(&v2, sizeof(Veiculo), 1, original);
+            
+            if (strcmp(v1.placa, v2.placa) > 0) {
+                fseek(original, i * sizeof(Veiculo), SEEK_SET);
+                fwrite(&v2, sizeof(Veiculo), 1, original);
+                fwrite(&v1, sizeof(Veiculo), 1, original);
+                trocou = 1;
             }
         }
-        usados[posMenor] = 1;
-        fseek(ordenado, i * sizeof(Veiculo), SEEK_SET);
-        fwrite(&menor, sizeof(Veiculo), 1, ordenado);
-    }
+    } while (trocou);
 
-    free(usados);
     fclose(original);
-    fclose(ordenado);
-    remove("veiculos.dat");
-    rename("ordenado_veiculos.dat", "veiculos.dat");
     printf("Veiculos ordenados por placa!\n");
 }
 

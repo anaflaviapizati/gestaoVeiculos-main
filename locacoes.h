@@ -9,8 +9,6 @@ typedef struct {
     char status[20];
 } Locacao;
 
-
-
 void criarLocacao();
 void finalizarLocacao();
 void listarLocacoes();

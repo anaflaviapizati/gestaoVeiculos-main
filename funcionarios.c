@@ -136,51 +136,36 @@ void ordenarFuncionariosPorCPF() {
         return;
     }
 
-    FILE *original = fopen("funcionarios.dat", "rb");
-    FILE *ordenado = fopen("ordenado.dat", "wb+");
-    if (!original || !ordenado) {
-        printf("Erro ao abrir arquivos!\n");
+
+    FILE *original = fopen("funcionarios.dat", "rb+");
+    if (!original) {
+        printf("Erro ao abrir arquivo para ordenacao!\n");
         return;
     }
 
-    int *usados = calloc(total, sizeof(int));
-    if (!usados) {
-        printf("Erro de memoria!\n");
-        fclose(original);
-        fclose(ordenado);
-        return;
-    }
-
-    for (int i = 0; i < total; i++) {
-        Funcionario menor;
-        long posMenor = -1;
-
-        for (int j = 0; j < total; j++) {
-            if (usados[j]) continue;
-
-            Funcionario atual;
-            fseek(original, j * sizeof(Funcionario), SEEK_SET);
-            fread(&atual, sizeof(Funcionario), 1, original);
-
-            if (posMenor == -1 || strcmp(atual.cpf, menor.cpf) < 0) {
-                menor = atual;
-                posMenor = j;
+    Funcionario f1, f2;
+    int trocou;
+    
+    do {
+        trocou = 0;
+        rewind(original);
+        
+        for (int i = 0; i < total - 1; i++) {
+            fseek(original, i * sizeof(Funcionario), SEEK_SET);
+            fread(&f1, sizeof(Funcionario), 1, original);
+            fread(&f2, sizeof(Funcionario), 1, original);
+            
+            if (strcmp(f1.cpf, f2.cpf) > 0) {
+                fseek(original, i * sizeof(Funcionario), SEEK_SET);
+                fwrite(&f2, sizeof(Funcionario), 1, original);
+                fwrite(&f1, sizeof(Funcionario), 1, original);
+                trocou = 1;
             }
         }
+    } while (trocou);
 
-        fseek(ordenado, i * sizeof(Funcionario), SEEK_SET);
-        fwrite(&menor, sizeof(Funcionario), 1, ordenado);
-        usados[posMenor] = 1;
-    }
-
-    free(usados);
     fclose(original);
-    fclose(ordenado);
-
-    remove("funcionarios.dat");
-    rename("ordenado.dat", "funcionarios.dat");
-
-    printf("Funcionarios ordenados!\n");
+    printf("Funcionarios ordenados por CPF!\n");
 }
 
 void gerarFuncionariosAleatorios(int quantidade) {

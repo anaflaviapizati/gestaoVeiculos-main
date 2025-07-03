@@ -236,50 +236,34 @@ void ordenarLocacoesPorData() {
         return;
     }
 
-    FILE *original = fopen("locacoes.dat", "rb");
-    FILE *ordenado = fopen("ordenado_locacoes.dat", "wb+");
-    if (!original || !ordenado) {
+    FILE *original = fopen("locacoes.dat", "rb+");
+    if (!original) {
         printf("Erro ao abrir arquivos!\n");
         return;
     }
 
-    int *usados = calloc(total, sizeof(int));
-    if (!usados) {
-        printf("Erro de memoria!\n");
-        fclose(original);
-        fclose(ordenado);
-        return;
-    }
-
-    for (int i = 0; i < total; i++) {
-        Locacao menor;
-        long posMenor = -1;
-
-        for (int j = 0; j < total; j++) {
-            if (usados[j]) continue;
-
-            Locacao atual;
-            fseek(original, j * sizeof(Locacao), SEEK_SET);
-            fread(&atual, sizeof(Locacao), 1, original);
-
-            if (posMenor == -1 || strcmp(atual.data_inicio, menor.data_inicio) < 0) {
-                menor = atual;
-                posMenor = j;
+    Locacao l1, l2;
+    int trocou;
+    
+    do {
+        trocou = 0;
+        rewind(original);
+        
+        for (int i = 0; i < total - 1; i++) {
+            fseek(original, i * sizeof(Locacao), SEEK_SET);
+            fread(&l1, sizeof(Locacao), 1, original);
+            fread(&l2, sizeof(Locacao), 1, original);
+            
+            if (strcmp(l1.data_inicio, l2.data_inicio) > 0) {
+                fseek(original, i * sizeof(Locacao), SEEK_SET);
+                fwrite(&l2, sizeof(Locacao), 1, original);
+                fwrite(&l1, sizeof(Locacao), 1, original);
+                trocou = 1;
             }
         }
+    } while (trocou);
 
-        fseek(ordenado, i * sizeof(Locacao), SEEK_SET);
-        fwrite(&menor, sizeof(Locacao), 1, ordenado);
-        usados[posMenor] = 1;
-    }
-
-    free(usados);
     fclose(original);
-    fclose(ordenado);
-
-    remove("locacoes.dat");
-    rename("ordenado_locacoes.dat", "locacoes.dat");
-
     printf("Locacoes ordenadas por data!\n");
 }
 
