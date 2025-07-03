@@ -1,0 +1,103 @@
+# depslib dependency file v1.0
+1750988614 source:c:\users\anafl\onedrive\documentos\gestaoveiculos\gestaoveiculos\main.c
+	<stdio.h>
+	"funcionarios.h"
+	"veiculos.h"
+	"locacoes.h"
+
+1750988492 source:c:\users\anafl\onedrive\documentos\gestaoveiculos\gestaoveiculos\funcionarios.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"funcionarios.h"
+
+1750988614 c:\users\anafl\onedrive\documentos\gestaoveiculos\gestaoveiculos\funcionarios.h
+
+1750988492 source:c:\users\anafl\onedrive\documentos\gestaoveiculos\gestaoveiculos\veiculos.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"veiculos.h"
+	"funcionarios.h"
+
+1750988614 c:\users\anafl\onedrive\documentos\gestaoveiculos\gestaoveiculos\veiculos.h
+
+1750988492 source:c:\users\anafl\onedrive\documentos\gestaoveiculos\gestaoveiculos\locacoes.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"locacoes.h"
+	"funcionarios.h"
+	"veiculos.h"
+
+1750988642 c:\users\anafl\onedrive\documentos\gestaoveiculos\gestaoveiculos\locacoes.h
+
+1751063746 source:c:\users\user\downloads\gestaoveiculos-main\gestaoveiculos-main\funcionarios.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"funcionarios.h"
+
+1751063746 c:\users\user\downloads\gestaoveiculos-main\gestaoveiculos-main\funcionarios.h
+
+1751063746 source:c:\users\user\downloads\gestaoveiculos-main\gestaoveiculos-main\main.c
+	<stdio.h>
+	"funcionarios.h"
+	"veiculos.h"
+	"locacoes.h"
+
+1751065881 c:\users\user\downloads\gestaoveiculos-main\gestaoveiculos-main\veiculos.h
+
+1751066004 c:\users\user\downloads\gestaoveiculos-main\gestaoveiculos-main\locacoes.h
+
+1751065856 source:c:\users\user\downloads\gestaoveiculos-main\gestaoveiculos-main\veiculos.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"veiculos.h"
+	"funcionarios.h"
+
+1751065867 source:c:\users\user\downloads\gestaoveiculos-main\gestaoveiculos-main\locacoes.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"locacoes.h"
+	"funcionarios.h"
+	"veiculos.h"
+
+1751584224 source:c:\users\user\downloads\gestaoveiculos\gestaoveiculos-main\funcionarios.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"funcionarios.h"
+
+1751584690 c:\users\user\downloads\gestaoveiculos\gestaoveiculos-main\funcionarios.h
+
+1751584690 c:\users\user\downloads\gestaoveiculos\gestaoveiculos-main\locacoes.h
+
+1751584020 source:c:\users\user\downloads\gestaoveiculos\gestaoveiculos-main\locacoes.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"locacoes.h"
+	"funcionarios.h"
+	"veiculos.h"
+
+1751584690 c:\users\user\downloads\gestaoveiculos\gestaoveiculos-main\veiculos.h
+
+1751584052 source:c:\users\user\downloads\gestaoveiculos\gestaoveiculos-main\main.c
+	<stdio.h>
+	"funcionarios.h"
+	"veiculos.h"
+	"locacoes.h"
+
+1751583888 source:c:\users\user\downloads\gestaoveiculos\gestaoveiculos-main\veiculos.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"veiculos.h"
+	"funcionarios.h"
+
