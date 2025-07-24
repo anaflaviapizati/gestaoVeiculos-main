@@ -14,7 +14,7 @@ void criarLocacao() {
     fgets(nova.cpf_funcionario, sizeof(nova.cpf_funcionario), stdin);
     nova.cpf_funcionario[strcspn(nova.cpf_funcionario, "\n")] = '\0';
 
-    int idx_func = buscaSequencialFuncionario(nova.cpf_funcionario);
+    int idx_func = buscaBinariaFuncionario(nova.cpf_funcionario);
     if (idx_func == -1) {
         printf("Funcionario nao encontrado!\n");
         return;
@@ -24,7 +24,7 @@ void criarLocacao() {
     fgets(nova.placa_veiculo, sizeof(nova.placa_veiculo), stdin);
     nova.placa_veiculo[strcspn(nova.placa_veiculo, "\n")] = '\0';
 
-    int idx_veic = buscaSequencialVeiculo(nova.placa_veiculo);
+    int idx_veic = buscaBinariaVeiculo(nova.placa_veiculo);
     if (idx_veic == -1) {
         printf("Veiculo nao encontrado!\n");
         return;
@@ -76,36 +76,34 @@ void finalizarLocacao() {
     fgets(placa, sizeof(placa), stdin);
     placa[strcspn(placa, "\n")] = '\0';
 
-    FILE *original = fopen("locacoes.dat", "rb");
-    FILE *temp = fopen("temp_locacoes.dat", "wb");
-    if (!original || !temp) {
-        printf("Erro ao abrir arquivos!\n");
+    int idx = buscaBinariaLocacao(cpf, placa);
+    if (idx == -1) {
+        printf("Locacao ativa nao encontrada!\n");
+        return;
+    }
+
+    FILE *file = fopen("locacoes.dat", "rb+");
+    if (!file) {
+        printf("Erro ao abrir arquivo de locacoes!\n");
         return;
     }
 
     Locacao l;
-    int finalizada = 0;
-    while (fread(&l, sizeof(Locacao), 1, original)) {
-        if (strcmp(l.cpf_funcionario, cpf) == 0 &&
-            strcmp(l.placa_veiculo, placa) == 0 &&
-            strcmp(l.status, "ATIVA") == 0) {
-            strcpy(l.status, "FINALIZADA");
-            finalizada = 1;
-        }
-        fwrite(&l, sizeof(Locacao), 1, temp);
+    fseek(file, idx * sizeof(Locacao), SEEK_SET);
+    fread(&l, sizeof(Locacao), 1, file);
+
+    if (strcmp(l.status, "ATIVA") != 0) {
+        printf("Locacao nao esta ativa!\n");
+        fclose(file);
+        return;
     }
 
-    fclose(original);
-    fclose(temp);
+    strcpy(l.status, "FINALIZADA");
+    fseek(file, idx * sizeof(Locacao), SEEK_SET);
+    fwrite(&l, sizeof(Locacao), 1, file);
+    fclose(file);
 
-    if (finalizada) {
-        remove("locacoes.dat");
-        rename("temp_locacoes.dat", "locacoes.dat");
-        printf("Locacao finalizada com sucesso!\n");
-    } else {
-        remove("temp_locacoes.dat");
-        printf("Locacao ativa nao encontrada!\n");
-    }
+    printf("Locacao finalizada com sucesso!\n");
 }
 
 void listarLocacoes() {
@@ -198,28 +196,6 @@ void listarLocacoesPorVeiculo() {
     fclose(file);
 }
 
-int buscaSequencialLocacao(const char *cpf, const char *placa) {
-    FILE *file = fopen("locacoes.dat", "rb");
-    if (!file) return -1;
-
-    Locacao l;
-    int index = 0;
-    while (fread(&l, sizeof(Locacao), 1, file)) {
-        if (strcmp(l.cpf_funcionario, cpf) == 0 &&
-            strcmp(l.placa_veiculo, placa) == 0) {
-            fclose(file);
-            return index;
-        }
-        index++;
-    }
-    fclose(file);
-    return -1;
-}
-
-int buscaBinariaLocacao(const char *cpf, const char *placa) {
-    return buscaSequencialLocacao(cpf, placa);
-}
-
 void ordenarLocacoesPorData() {
     FILE *file = fopen("locacoes.dat", "rb");
     if (!file) {
@@ -244,16 +220,16 @@ void ordenarLocacoesPorData() {
 
     Locacao l1, l2;
     int trocou;
-    
+
     do {
         trocou = 0;
         rewind(original);
-        
+
         for (int i = 0; i < total - 1; i++) {
             fseek(original, i * sizeof(Locacao), SEEK_SET);
             fread(&l1, sizeof(Locacao), 1, original);
             fread(&l2, sizeof(Locacao), 1, original);
-            
+
             if (strcmp(l1.data_inicio, l2.data_inicio) > 0) {
                 fseek(original, i * sizeof(Locacao), SEEK_SET);
                 fwrite(&l2, sizeof(Locacao), 1, original);
@@ -265,6 +241,110 @@ void ordenarLocacoesPorData() {
 
     fclose(original);
     printf("Locacoes ordenadas por data!\n");
+}
+
+void ordenarLocacoesPorCPFPlaca() {
+    FILE *file = fopen("locacoes.dat", "rb");
+    if (!file) {
+        printf("Arquivo de locacoes nao encontrado!\n");
+        return;
+    }
+
+    fseek(file, 0, SEEK_END);
+    long total = ftell(file) / sizeof(Locacao);
+    fclose(file);
+
+    if (total == 0) {
+        printf("Nenhuma locacao para ordenar.\n");
+        return;
+    }
+
+    FILE *original = fopen("locacoes.dat", "rb+");
+    if (!original) {
+        printf("Erro ao abrir arquivos!\n");
+        return;
+    }
+
+    Locacao l1, l2;
+    int trocou;
+
+    do {
+        trocou = 0;
+        rewind(original);
+
+        for (int i = 0; i < total - 1; i++) {
+            fseek(original, i * sizeof(Locacao), SEEK_SET);
+            fread(&l1, sizeof(Locacao), 1, original);
+            fread(&l2, sizeof(Locacao), 1, original);
+
+            int cmpCpf = strcmp(l1.cpf_funcionario, l2.cpf_funcionario);
+            int cmpPlaca = strcmp(l1.placa_veiculo, l2.placa_veiculo);
+
+            if (cmpCpf > 0 || (cmpCpf == 0 && cmpPlaca > 0)) {
+                fseek(original, i * sizeof(Locacao), SEEK_SET);
+                fwrite(&l2, sizeof(Locacao), 1, original);
+                fwrite(&l1, sizeof(Locacao), 1, original);
+                trocou = 1;
+            }
+        }
+    } while (trocou);
+
+    fclose(original);
+    printf("Locacoes ordenadas por CPF e placa!\n");
+}
+
+int buscaSequencialLocacao(const char *cpf, const char *placa) {
+    FILE *file = fopen("locacoes.dat", "rb");
+    if (!file) return -1;
+
+    Locacao l;
+    int index = 0;
+    while (fread(&l, sizeof(Locacao), 1, file)) {
+        if (strcmp(l.cpf_funcionario, cpf) == 0 &&
+            strcmp(l.placa_veiculo, placa) == 0) {
+            fclose(file);
+            return index;
+        }
+        index++;
+    }
+    fclose(file);
+    return -1;
+}
+
+int buscaBinariaLocacao(const char *cpf, const char *placa) {
+    FILE *file = fopen("locacoes.dat", "rb");
+    if (!file) return -1;
+
+    fseek(file, 0, SEEK_END);
+    long tamanho = ftell(file);
+    int total = tamanho / sizeof(Locacao);
+
+    int inicio = 0;
+    int fim = total - 1;
+
+    while (inicio <= fim) {
+        int meio = (inicio + fim) / 2;
+
+        Locacao l;
+        fseek(file, meio * sizeof(Locacao), SEEK_SET);
+        fread(&l, sizeof(Locacao), 1, file);
+
+        int cmpCpf = strcmp(cpf, l.cpf_funcionario);
+        int cmpPlaca = strcmp(placa, l.placa_veiculo);
+
+        if (cmpCpf == 0 && cmpPlaca == 0) {
+            fclose(file);
+            return meio;
+        }
+
+        if (cmpCpf < 0 || (cmpCpf == 0 && cmpPlaca < 0)) {
+            fim = meio - 1;
+        } else {
+            inicio = meio + 1;
+        }
+    }
+    fclose(file);
+    return -1;
 }
 
 void gerarLocacoesAleatorias(int quantidade) {

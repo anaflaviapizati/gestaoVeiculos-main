@@ -3,11 +3,6 @@
 #include <string.h>
 #include <time.h>
 #include "funcionarios.h"
-int totalFuncionarios = 0;
-
-void atualizarTotalFuncionarios() {
-    totalFuncionarios = contarFuncionarios();
-}
 
 void adicionarFuncionario() {
     Funcionario novo;
@@ -16,7 +11,7 @@ void adicionarFuncionario() {
     fgets(novo.cpf, sizeof(novo.cpf), stdin);
     novo.cpf[strcspn(novo.cpf, "\n")] = '\0';
 
-    if (buscaSequencialFuncionario(novo.cpf) != -1) {
+    if (buscaBinariaFuncionario(novo.cpf) != -1) {
         printf("Ja existe um funcionario com este CPF!\n");
         return;
     }
@@ -51,7 +46,6 @@ void listarFuncionarios() {
     while (fread(&f, sizeof(Funcionario), 1, file)) {
         printf("%d) CPF: %s | Nome: %s | Idade: %d\n", i++, f.cpf, f.nome, f.idade);
     }
-
     fclose(file);
 }
 
@@ -107,17 +101,38 @@ int buscaSequencialFuncionario(const char *cpf) {
     return -1;
 }
 
-int buscarFuncionarioPorIndice(int indice, Funcionario *f) {
+int buscaBinariaFuncionario(const char *cpf) {
     FILE *file = fopen("funcionarios.dat", "rb");
     if (!file) return -1;
 
-    fseek(file, indice * sizeof(Funcionario), SEEK_SET);
-    if (fread(f, sizeof(Funcionario), 1, file) != 1) {
-        fclose(file);
-        return -1;
+    fseek(file, 0, SEEK_END);
+    long tamanho = ftell(file);
+    int total = tamanho / sizeof(Funcionario);
+
+    int inicio = 0;
+    int fim = total - 1;
+
+    while (inicio <= fim) {
+        int meio = (inicio + fim) / 2;
+
+        Funcionario f;
+        fseek(file, meio * sizeof(Funcionario), SEEK_SET);
+        fread(&f, sizeof(Funcionario), 1, file);
+
+        int cmp = strcmp(cpf, f.cpf);
+        if (cmp == 0) {
+            fclose(file);
+            return meio;
+        }
+        if (cmp < 0) {
+            fim = meio - 1;
+        } else {
+            inicio = meio + 1;
+        }
     }
+
     fclose(file);
-    return 0;
+    return -1;
 }
 
 void ordenarFuncionariosPorCPF() {
@@ -135,7 +150,6 @@ void ordenarFuncionariosPorCPF() {
         printf("Nenhum funcionario para ordenar.\n");
         return;
     }
-
 
     FILE *original = fopen("funcionarios.dat", "rb+");
     if (!original) {
@@ -168,6 +182,19 @@ void ordenarFuncionariosPorCPF() {
     printf("Funcionarios ordenados por CPF!\n");
 }
 
+int buscarFuncionarioPorIndice(int indice, Funcionario *f) {
+    FILE *file = fopen("funcionarios.dat", "rb");
+    if (!file) return -1;
+
+    fseek(file, indice * sizeof(Funcionario), SEEK_SET);
+    if (fread(f, sizeof(Funcionario), 1, file) != 1) {
+        fclose(file);
+        return -1;
+    }
+    fclose(file);
+    return 0;
+}
+
 void gerarFuncionariosAleatorios(int quantidade) {
     FILE *file = fopen("funcionarios.dat", "ab");
     if (!file) {
@@ -187,7 +214,7 @@ void gerarFuncionariosAleatorios(int quantidade) {
         Funcionario f;
         sprintf(f.cpf, "%03d.%03d.%03d-%02d", rand() % 1000, rand() % 1000, rand() % 1000, rand() % 100);
 
-        if (buscaSequencialFuncionario(f.cpf) != -1) continue;
+        if (buscaBinariaFuncionario(f.cpf) != -1) continue;
 
         snprintf(f.nome, sizeof(f.nome), "%s %s", nomes[rand() % totalNomes], sobrenomes[rand() % totalSobrenomes]);
         f.idade = 18 + rand() % 43;

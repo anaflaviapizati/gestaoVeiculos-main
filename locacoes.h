@@ -17,6 +17,7 @@ void listarLocacoesPorVeiculo();
 int buscaSequencialLocacao(const char *cpf, const char *placa);
 int buscaBinariaLocacao(const char *cpf, const char *placa);
 void ordenarLocacoesPorData();
+void ordenarLocacoesPorCPFPlaca();
 void gerarLocacoesAleatorias(int quantidade);
 int contarLocacoes();
 

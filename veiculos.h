@@ -13,14 +13,12 @@ typedef struct {
 void adicionarVeiculo();
 void removerVeiculo();
 void listarVeiculos();
-void buscarVeiculoPorPlaca();
-void associarVeiculoFuncionario();
 int buscaSequencialVeiculo(const char *placa);
 int buscaBinariaVeiculo(const char *placa);
 void ordenarVeiculosPorPlaca();
 void gerarVeiculosAleatorios(int quantidade);
 int contarVeiculos();
 int buscarVeiculoPorIndice(int indice, Veiculo *v);
-int carregarTotalVeiculos();
+void gerarParticoesVeiculos();
 
 #endif // VEICULOS_H

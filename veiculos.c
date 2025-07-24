@@ -31,6 +31,40 @@ int buscaSequencialVeiculo(const char *placa) {
     return -1;
 }
 
+int buscaBinariaVeiculo(const char *placa) {
+    FILE *file = fopen("veiculos.dat", "rb");
+    if (!file) return -1;
+
+    fseek(file, 0, SEEK_END);
+    long tamanho = ftell(file);
+    int total = tamanho / sizeof(Veiculo);
+
+    int inicio = 0;
+    int fim = total - 1;
+
+    while (inicio <= fim) {
+        int meio = (inicio + fim) / 2;
+
+        Veiculo v;
+        fseek(file, meio * sizeof(Veiculo), SEEK_SET);
+        fread(&v, sizeof(Veiculo), 1, file);
+
+        int cmp = strcmp(placa, v.placa);
+        if (cmp == 0) {
+            fclose(file);
+            return meio;
+        }
+        if (cmp < 0) {
+            fim = meio - 1;
+        } else {
+            inicio = meio + 1;
+        }
+    }
+
+    fclose(file);
+    return -1;
+}
+
 int buscarVeiculoPorIndice(int indice, Veiculo *v) {
     FILE *file = fopen("veiculos.dat", "rb");
     if (!file) return -1;
@@ -50,7 +84,7 @@ void adicionarVeiculo() {
     fgets(novo.placa, sizeof(novo.placa), stdin);
     novo.placa[strcspn(novo.placa, "\n")] = '\0';
 
-    if (buscaSequencialVeiculo(novo.placa) != -1) {
+    if (buscaBinariaVeiculo(novo.placa) != -1) {
         printf("Ja existe um veiculo com essa placa!\n");
         return;
     }
@@ -75,8 +109,7 @@ void adicionarVeiculo() {
     fgets(novo.cpf_funcionario, sizeof(novo.cpf_funcionario), stdin);
     novo.cpf_funcionario[strcspn(novo.cpf_funcionario, "\n")] = '\0';
 
-    // Verifica se funcionário existe no arquivo funcionarios.dat
-    if (buscaSequencialFuncionario(novo.cpf_funcionario) == -1) {
+    if (buscaBinariaFuncionario(novo.cpf_funcionario) == -1) {
         printf("Funcionario com esse CPF nao encontrado!\n");
         return;
     }
@@ -175,62 +208,6 @@ void removerVeiculo() {
     }
 }
 
-void editarVeiculo() {
-    char placa[10];
-    printf("\n--- editar veiculo ---\n");
-    printf("placa do bicho q vc quer mudar: ");
-    fgets(placa, sizeof(placa), stdin);
-    placa[strcspn(placa, "\n")] = '\0';
-
-    FILE *original = fopen("veiculos.dat", "rb");
-    FILE *temp = fopen("temp_veiculos.dat", "wb");
-    if (!original || !temp) {
-        printf("deu ruim abrindo os arquivos\n");
-        if (original) fclose(original);
-        if (temp) fclose(temp);
-        return;
-    }
-
-    Veiculo v;
-    int encontrado = 0;
-    while (fread(&v, sizeof(Veiculo), 1, original)) {
-        if (strcmp(v.placa, placa) == 0) {
-            encontrado = 1;
-            printf("modelo: ");
-            fgets(v.modelo, sizeof(v.modelo), stdin);
-            v.modelo[strcspn(v.modelo, "\n")] = '\0';
-
-            printf("marca: ");
-            fgets(v.marca, sizeof(v.marca), stdin);
-            v.marca[strcspn(v.marca, "\n")] = '\0';
-
-            printf("ano: ");
-            scanf("%d", &v.ano);
-            getchar();
-
-            printf("cor: ");
-            fgets(v.cor, sizeof(v.cor), stdin);
-            v.cor[strcspn(v.cor, "\n")] = '\0';
-
-            printf("cpf do responsavel: ");
-            fgets(v.cpf_funcionario, sizeof(v.cpf_funcionario), stdin);
-            v.cpf_funcionario[strcspn(v.cpf_funcionario, "\n")] = '\0';
-        }
-        fwrite(&v, sizeof(Veiculo), 1, temp);
-    }
-    fclose(original);
-    fclose(temp);
-
-    if (encontrado) {
-        remove("veiculos.dat");
-        rename("temp_veiculos.dat", "veiculos.dat");
-        printf("mudou tudo, prontinho\n");
-    } else {
-        remove("temp_veiculos.dat");
-        printf("placa %s nao encontrada...\n", placa);
-    }
-}
-
 void ordenarVeiculosPorPlaca() {
     FILE *file = fopen("veiculos.dat", "rb");
     if (!file) {
@@ -247,7 +224,6 @@ void ordenarVeiculosPorPlaca() {
         return;
     }
 
-
     FILE *original = fopen("veiculos.dat", "rb+");
     if (!original) {
         printf("Erro ao abrir arquivo para ordenacao\n");
@@ -256,16 +232,16 @@ void ordenarVeiculosPorPlaca() {
 
     Veiculo v1, v2;
     int trocou;
-    
+
     do {
         trocou = 0;
         rewind(original);
-        
+
         for (int i = 0; i < total - 1; i++) {
             fseek(original, i * sizeof(Veiculo), SEEK_SET);
             fread(&v1, sizeof(Veiculo), 1, original);
             fread(&v2, sizeof(Veiculo), 1, original);
-            
+
             if (strcmp(v1.placa, v2.placa) > 0) {
                 fseek(original, i * sizeof(Veiculo), SEEK_SET);
                 fwrite(&v2, sizeof(Veiculo), 1, original);
@@ -317,7 +293,7 @@ void gerarVeiculosAleatorios(int quantidade) {
             }
             v.placa[7] = '\0';
 
-            if (buscaSequencialVeiculo(v.placa) != -1) {
+            if (buscaBinariaVeiculo(v.placa) != -1) {
                 valido = 0;
             }
         } while (!valido);

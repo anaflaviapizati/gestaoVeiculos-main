@@ -92,9 +92,9 @@ void menuVeiculos() {
         printf("\n1. Adicionar Veiculo");
         printf("\n2. Remover Veiculo");
         printf("\n3. Listar Veiculos");
-        printf("\n4. Buscar Veiculo por Placa");
-        printf("\n5. Ordenar Veiculos por Placa");
-        printf("\n6. Gerar Veiculos Aleatorios");
+        printf("\n4. Ordenar Veiculos por Placa");
+        printf("\n5. Gerar Veiculos Aleatorios");
+        printf("\n6. Gerar Particoes Ordenadas (Selecao por Substituicao)");
         printf("\n0. Voltar\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
@@ -110,12 +110,9 @@ void menuVeiculos() {
                 listarVeiculos();
                 break;
             case 4:
-                buscarVeiculoPorPlaca();
-                break;
-            case 5:
                 ordenarVeiculosPorPlaca();
                 break;
-            case 6: {
+            case 5: {
                 int qtd;
                 printf("Quantos veiculos deseja gerar? ");
                 scanf("%d", &qtd);
@@ -123,6 +120,9 @@ void menuVeiculos() {
                 gerarVeiculosAleatorios(qtd);
                 break;
             }
+            case 6:
+                gerarParticoesVeiculos();
+                break;
             case 0:
                 break;
             default:
@@ -141,7 +141,8 @@ void menuLocacoes() {
         printf("\n4. Locacoes por Funcionario");
         printf("\n5. Locacoes por Veiculo");
         printf("\n6. Ordenar Locacoes por Data");
-        printf("\n7. Gerar Locacoes Aleatorias");
+        printf("\n7. Ordenar Locacoes por CPF e Placa");
+        printf("\n8. Gerar Locacoes Aleatorias");
         printf("\n0. Voltar\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
@@ -165,7 +166,10 @@ void menuLocacoes() {
             case 6:
                 ordenarLocacoesPorData();
                 break;
-            case 7: {
+            case 7:
+                ordenarLocacoesPorCPFPlaca();
+                break;
+            case 8: {
                 int qtd;
                 printf("Quantas locacoes deseja gerar? ");
                 scanf("%d", &qtd);
