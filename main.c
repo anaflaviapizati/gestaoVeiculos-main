@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "funcionarios.h"
 #include "veiculos.h"
 #include "locacoes.h"
@@ -95,6 +96,9 @@ void menuVeiculos() {
         printf("\n4. Ordenar Veiculos por Placa");
         printf("\n5. Gerar Veiculos Aleatorios");
         printf("\n6. Gerar Particoes Ordenadas (Selecao por Substituicao)");
+        printf("\n7. Imprimir Particoes Geradas");
+        printf("\n8. Intercalar Particoes (Árvore de Vencedores)");
+        printf("\n9. Listar Veiculos Ordenados (arquivo final)");
         printf("\n0. Voltar\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
@@ -120,9 +124,48 @@ void menuVeiculos() {
                 gerarVeiculosAleatorios(qtd);
                 break;
             }
-            case 6:
-                gerarParticoesVeiculos();
+            case 6: {
+                FILE *arq = fopen("veiculos.dat", "rb");
+                if (!arq) {
+                    printf("Erro ao abrir veiculos.dat\n");
+                    break;
+                }
+                int qtd_particoes = selecao_por_substituicao_veiculos(arq, 5); // 5 pode ser alterado para o tamanho desejado
+                fclose(arq);
+                printf("%d particoes geradas com sucesso!\n", qtd_particoes);
                 break;
+            }
+            case 7: {
+                int qtd;
+                printf("Quantas particoes deseja imprimir? ");
+                scanf("%d", &qtd);
+                getchar();
+                imprime_particoes_veiculos(qtd);
+                break;
+            }
+            case 8: {
+                int qtd;
+                printf("Quantas particoes deseja intercalar? ");
+                scanf("%d", &qtd);
+                getchar();
+                intercalacao_arvore_vencedores(qtd, "veiculos_ordenado.dat");
+                break;
+            }
+            case 9: {
+                FILE *f = fopen("veiculos_ordenado.dat", "rb");
+                if (!f) {
+                    printf("Arquivo veiculos_ordenado.dat nao encontrado.\n");
+                    break;
+                }
+                Veiculo *v;
+                printf("\n==== Veiculos Ordenados ====");
+                while ((v = le_veiculo(f)) != NULL) {
+                    imprime_veiculo(v);
+                    free(v);
+                }
+                fclose(f);
+                break;
+            }
             case 0:
                 break;
             default:

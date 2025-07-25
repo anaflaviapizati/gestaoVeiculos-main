@@ -107,3 +107,46 @@
 	<string.h>
 	"veiculos.h"
 
+1753398490 source:c:\users\anafl\onedrive\documentos\gestaoveiculos-main\funcionarios.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"funcionarios.h"
+
+1753398490 c:\users\anafl\onedrive\documentos\gestaoveiculos-main\funcionarios.h
+
+1753398490 source:c:\users\anafl\onedrive\documentos\gestaoveiculos-main\locacoes.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"locacoes.h"
+	"funcionarios.h"
+	"veiculos.h"
+
+1753398490 c:\users\anafl\onedrive\documentos\gestaoveiculos-main\locacoes.h
+
+1753402686 c:\users\anafl\onedrive\documentos\gestaoveiculos-main\veiculos.h
+
+1753402741 source:c:\users\anafl\onedrive\documentos\gestaoveiculos-main\main.c
+	<stdio.h>
+	<stdlib.h>
+	"funcionarios.h"
+	"veiculos.h"
+	"locacoes.h"
+
+1753402075 source:c:\users\anafl\onedrive\documentos\gestaoveiculos-main\veiculos.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"veiculos.h"
+	"funcionarios.h"
+
+1753402613 source:c:\users\anafl\onedrive\documentos\gestaoveiculos-main\particiona_veiculos.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"veiculos.h"
+

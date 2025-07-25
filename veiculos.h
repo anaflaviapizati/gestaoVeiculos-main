@@ -19,6 +19,11 @@ void ordenarVeiculosPorPlaca();
 void gerarVeiculosAleatorios(int quantidade);
 int contarVeiculos();
 int buscarVeiculoPorIndice(int indice, Veiculo *v);
-void gerarParticoesVeiculos();
+int gerarParticoesVeiculos();
+void imprime_particoes_veiculos(int qtd_particoes);
+int selecao_por_substituicao_veiculos(FILE *arq, int mem_size);
+void intercalacao_arvore_vencedores(int qtd_particoes, const char *saida_final);
+Veiculo* le_veiculo(FILE *arq);
+void imprime_veiculo(Veiculo *v);
 
 #endif // VEICULOS_H

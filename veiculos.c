@@ -329,3 +329,15 @@ int contarVeiculos() {
     return tamanho / sizeof(Veiculo);
 }
 
+ int gerarParticoesVeiculos() {
+       FILE *entrada = fopen("veiculos.dat", "rb");
+       if (!entrada) {
+           printf("Erro ao abrir veiculos.dat\n");
+           return 0;
+       }
+       // Implementação completa da função aqui
+       // (use o código que eu te mostrei anteriormente)
+       fclose(entrada);
+       return 1; // Sucesso
+   }
+
