@@ -130,7 +130,7 @@ void menuVeiculos() {
                     printf("Erro ao abrir veiculos.dat\n");
                     break;
                 }
-                int qtd_particoes = selecao_por_substituicao_veiculos(arq, 5); // 5 pode ser alterado para o tamanho desejado
+                int qtd_particoes = selecao_por_substituicao_veiculos(arq, 5);
                 fclose(arq);
                 printf("%d particoes geradas com sucesso!\n", qtd_particoes);
                 break;
