@@ -255,6 +255,22 @@ void ordenarVeiculosPorPlaca() {
     printf("Veiculos ordenados por placa!\n");
 }
 
+void ordenarVeiculosPorSelecaoSubstituicao() {
+    FILE *arq = fopen("veiculos.dat", "rb");
+    if (!arq) {
+        printf("Arquivo de veiculos nao encontrado!\n");
+        return;
+    }
+    int mem_size = 5; // Tamanho da mem√≥ria, pode ser ajustado
+    int qtd_particoes = selecao_por_substituicao_veiculos(arq, mem_size);
+    fclose(arq);
+    printf("%d particoes geradas com sucesso!\n", qtd_particoes);
+
+    // Intercala as parti√ß√µes geradas em um arquivo final ordenado
+    intercalacao_arvore_vencedores(qtd_particoes, "veiculos_ordenado.dat");
+    printf("Arquivo veiculos_ordenado.dat gerado com sucesso!\n");
+}
+
 void gerarVeiculosAleatorios(int quantidade) {
     if (quantidade <= 0) return;
 
@@ -335,8 +351,8 @@ int contarVeiculos() {
            printf("Erro ao abrir veiculos.dat\n");
            return 0;
        }
-       // ImplementaÁ„o completa da funÁ„o aqui
-       // (use o cÛdigo que eu te mostrei anteriormente)
+       // ImplementaÔøΩÔøΩo completa da funÔøΩÔøΩo aqui
+       // (use o cÔøΩdigo que eu te mostrei anteriormente)
        fclose(entrada);
        return 1; // Sucesso
    }

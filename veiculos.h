@@ -16,6 +16,7 @@ void listarVeiculos();
 int buscaSequencialVeiculo(const char *placa);
 int buscaBinariaVeiculo(const char *placa);
 void ordenarVeiculosPorPlaca();
+void ordenarVeiculosPorSelecaoSubstituicao();
 void gerarVeiculosAleatorios(int quantidade);
 int contarVeiculos();
 int buscarVeiculoPorIndice(int indice, Veiculo *v);
