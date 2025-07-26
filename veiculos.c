@@ -269,6 +269,17 @@ void ordenarVeiculosPorSelecaoSubstituicao() {
     // Intercala as partições geradas em um arquivo final ordenado
     intercalacao_arvore_vencedores(qtd_particoes, "veiculos_ordenado.dat");
     printf("Arquivo veiculos_ordenado.dat gerado com sucesso!\n");
+
+    // Substitui o arquivo original pelo ordenado
+    if (remove("veiculos.dat") == 0) {
+        if (rename("veiculos_ordenado.dat", "veiculos.dat") == 0) {
+            printf("Arquivo veiculos.dat foi substituido pelo arquivo ordenado com sucesso!\n");
+        } else {
+            printf("Erro ao renomear veiculos_ordenado.dat para veiculos.dat\n");
+        }
+    } else {
+        printf("Erro ao remover veiculos.dat original. O arquivo ordenado foi salvo como veiculos_ordenado.dat\n");
+    }
 }
 
 void gerarVeiculosAleatorios(int quantidade) {
