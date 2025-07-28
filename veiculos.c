@@ -255,6 +255,57 @@ void ordenarVeiculosPorPlaca() {
     printf("Veiculos ordenados por placa!\n");
 }
 
+void ordenarVeiculosPorSelecaoSubstituicao() {
+    FILE *arq = fopen("veiculos.dat", "rb");
+    if (!arq) {
+        printf("Arquivo de veiculos nao encontrado!\n");
+        return;
+    }
+    FILE *log = fopen("log_ordenacao.txt", "a");
+    if (log) {
+        fprintf(log, "Iniciando ordenação por seleção por substituição...\n");
+    }
+    int mem_size = 5; // Tamanho da memória, pode ser ajustado
+    int qtd_particoes = selecao_por_substituicao_veiculos(arq, mem_size);
+    fclose(arq);
+    printf("%d particoes geradas com sucesso!\n", qtd_particoes);
+    if (log) {
+        fprintf(log, "%d partições geradas com sucesso.\n", qtd_particoes);
+        fprintf(log, "Iniciando intercalação ótima (árvore de vencedores)...\n");
+    }
+
+    // Intercala as partições geradas em um arquivo final ordenado
+    intercalacao_arvore_vencedores(qtd_particoes, "veiculos_ordenado.dat");
+    printf("Arquivo veiculos_ordenado.dat gerado com sucesso!\n");
+    if (log) {
+        fprintf(log, "Arquivo veiculos_ordenado.dat gerado com sucesso.\n");
+    }
+
+    // Substitui o arquivo original pelo ordenado
+    if (remove("veiculos.dat") == 0) {
+        if (rename("veiculos_ordenado.dat", "veiculos.dat") == 0) {
+            printf("Arquivo veiculos.dat foi substituido pelo arquivo ordenado com sucesso!\n");
+            if (log) {
+                fprintf(log, "Arquivo veiculos.dat foi substituído pelo arquivo ordenado com sucesso.\n");
+            }
+        } else {
+            printf("Erro ao renomear veiculos_ordenado.dat para veiculos.dat\n");
+            if (log) {
+                fprintf(log, "Erro ao renomear veiculos_ordenado.dat para veiculos.dat.\n");
+            }
+        }
+    } else {
+        printf("Erro ao remover veiculos.dat original. O arquivo ordenado foi salvo como veiculos_ordenado.dat\n");
+        if (log) {
+            fprintf(log, "Erro ao remover veiculos.dat original. O arquivo ordenado foi salvo como veiculos_ordenado.dat.\n");
+        }
+    }
+    if (log) {
+        fprintf(log, "---\n");
+        fclose(log);
+    }
+}
+
 void gerarVeiculosAleatorios(int quantidade) {
     if (quantidade <= 0) return;
 
@@ -335,8 +386,8 @@ int contarVeiculos() {
            printf("Erro ao abrir veiculos.dat\n");
            return 0;
        }
-       // Implementa��o completa da fun��o aqui
-       // (use o c�digo que eu te mostrei anteriormente)
+       // Implementa��o completa da fun��o aqui
+       // (use o c�digo que eu te mostrei anteriormente)
        fclose(entrada);
        return 1; // Sucesso
    }

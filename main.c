@@ -99,6 +99,7 @@ void menuVeiculos() {
         printf("\n7. Imprimir Particoes Geradas");
         printf("\n8. Intercalar Particoes (Árvore de Vencedores)");
         printf("\n9. Listar Veiculos Ordenados (arquivo final)");
+        printf("\n10. Ordenar Veiculos por Selecao por Substituicao");
         printf("\n0. Voltar\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
@@ -166,6 +167,9 @@ void menuVeiculos() {
                 fclose(f);
                 break;
             }
+            case 10:
+                ordenarVeiculosPorSelecaoSubstituicao();
+                break;
             case 0:
                 break;
             default:

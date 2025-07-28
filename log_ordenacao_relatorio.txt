@@ -1,0 +1,22 @@
+Relatório de Testes de Ordenação - Veículos
+===========================================
+
+Durante os testes realizados com a ordenação dos registros da base de veículos, utilizei dois métodos principais: o Bubble Sort (interno) e a combinação de Seleção por Substituição com Intercalação Ótima (Árvore de Vencedores).
+
+1. Bubble Sort:
+   - Simples de implementar e entender.
+   - Funciona bem para pequenas quantidades de dados.
+   - Para bases maiores, mostrou-se lento e pouco eficiente, como esperado para algoritmos O(n²).
+   - Não é recomendado para grandes volumes de registros.
+
+2. Seleção por Substituição + Intercalação Ótima:
+   - O processo de geração de partições ordenadas foi eficiente e permitiu trabalhar com volumes de dados maiores do que a memória disponível.
+   - A intercalação por árvore de vencedores foi rápida e garantiu que o arquivo final estivesse corretamente ordenado.
+   - O uso de logs ajudou a acompanhar cada etapa do processo, facilitando a identificação de eventuais problemas.
+   - A substituição automática do arquivo original pelo ordenado tornou o processo transparente para o usuário.
+
+Opinião Geral:
+--------------
+A abordagem de Seleção por Substituição seguida de Intercalação Ótima é, sem dúvida, a mais indicada para bases grandes. Ela alia eficiência e robustez, além de ser escalável. O Bubble Sort, apesar de didático, deve ser restrito a situações de teste ou bases muito pequenas. O sistema ficou mais confiável e prático após a implementação dos logs e da substituição automática do arquivo.
+
+Recomendo fortemente o uso da abordagem externa (Seleção por Substituição + Intercalação Ótima) para qualquer aplicação real que envolva grandes volumes de dados. 
