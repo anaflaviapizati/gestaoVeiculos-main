@@ -5,6 +5,143 @@
 #include "veiculos.h"
 #include "funcionarios.h"
 
+typedef struct {
+    char placa[10];
+    int indice;
+    int ocupado;
+} HashEntryVeiculo;
+
+static HashEntryVeiculo *tabelaHashVeiculos = NULL;
+static int tamanhoTabelaHashVeiculos = 0;
+static int quantidadeInseridaHashVeiculos = 0;
+
+static void invalidarIndiceHashInterno() {
+    if (tabelaHashVeiculos != NULL) {
+        free(tabelaHashVeiculos);
+        tabelaHashVeiculos = NULL;
+    }
+    tamanhoTabelaHashVeiculos = 0;
+    quantidadeInseridaHashVeiculos = 0;
+}
+
+static int ehPrimo(int n) {
+    if (n < 2) return 0;
+    if (n % 2 == 0) return n == 2;
+    for (int i = 3; i * i <= n; i += 2) {
+        if (n % i == 0) return 0;
+    }
+    return 1;
+}
+
+static int proximoPrimo(int n) {
+    if (n <= 2) return 2;
+    if (n % 2 == 0) n++;
+    while (!ehPrimo(n)) n += 2;
+    return n;
+}
+
+static unsigned int hashPlaca(const char *placa) {
+    unsigned int h = 0u;
+    for (const unsigned char *p = (const unsigned char *)placa; *p; ++p) {
+        h = h * 131u + (unsigned int)(*p);
+    }
+    return h;
+}
+
+static void inserirNaHash(const char *placa, int indice) {
+    unsigned int h = hashPlaca(placa);
+    int pos = (int)(h % (unsigned int)tamanhoTabelaHashVeiculos);
+    while (tabelaHashVeiculos[pos].ocupado) {
+        if (strcmp(tabelaHashVeiculos[pos].placa, placa) == 0) {
+            tabelaHashVeiculos[pos].indice = indice;
+            return;
+        }
+        pos = (pos + 1) % tamanhoTabelaHashVeiculos;
+    }
+    strncpy(tabelaHashVeiculos[pos].placa, placa, sizeof(tabelaHashVeiculos[pos].placa));
+    tabelaHashVeiculos[pos].placa[sizeof(tabelaHashVeiculos[pos].placa) - 1] = '\0';
+    tabelaHashVeiculos[pos].indice = indice;
+    tabelaHashVeiculos[pos].ocupado = 1;
+    quantidadeInseridaHashVeiculos++;
+}
+
+void construirIndiceHashVeiculos() {
+    invalidarIndiceHashInterno();
+    FILE *file = fopen("veiculos.dat", "rb");
+    if (!file) {
+        printf("Nenhum veiculo para indexar (veiculos.dat nao encontrado).\n");
+        return;
+    }
+
+    fseek(file, 0, SEEK_END);
+    long tamanhoBytes = ftell(file);
+    int total = (int)(tamanhoBytes / (long)sizeof(Veiculo));
+    if (total <= 0) {
+        fclose(file);
+        printf("Nenhum veiculo para indexar.\n");
+        return;
+    }
+    int capacidade = proximoPrimo(total * 2 + 1);
+    tabelaHashVeiculos = (HashEntryVeiculo *)calloc((size_t)capacidade, sizeof(HashEntryVeiculo));
+    if (!tabelaHashVeiculos) {
+        fclose(file);
+        printf("Falha ao alocar memoria para indice hash de veiculos.\n");
+        return;
+    }
+    tamanhoTabelaHashVeiculos = capacidade;
+    quantidadeInseridaHashVeiculos = 0;
+
+    // Varre o arquivo e insere na tabela
+    Veiculo v;
+    int idx = 0;
+    rewind(file);
+    while (fread(&v, sizeof(Veiculo), 1, file) == 1) {
+        inserirNaHash(v.placa, idx);
+        idx++;
+    }
+    fclose(file);
+    printf("Indice hash construido: %d registros em %d buckets.\n", quantidadeInseridaHashVeiculos, tamanhoTabelaHashVeiculos);
+}
+
+int buscarVeiculoHash(const char *placa) {
+    if (!tabelaHashVeiculos || tamanhoTabelaHashVeiculos == 0) {
+        construirIndiceHashVeiculos();
+        if (!tabelaHashVeiculos || tamanhoTabelaHashVeiculos == 0) return -1;
+    }
+    unsigned int h = hashPlaca(placa);
+    int pos = (int)(h % (unsigned int)tamanhoTabelaHashVeiculos);
+    int start = pos;
+    while (tabelaHashVeiculos[pos].ocupado) {
+        if (strcmp(tabelaHashVeiculos[pos].placa, placa) == 0) {
+            return tabelaHashVeiculos[pos].indice;
+        }
+        pos = (pos + 1) % tamanhoTabelaHashVeiculos;
+        if (pos == start) break;
+    }
+    return -1;
+}
+
+void buscarVeiculoPorPlacaHash() {
+    char placa[10];
+    printf("\n--- Busca por Placa (Hash) ---\n");
+    printf("Qual placa voce quer? ");
+    fgets(placa, sizeof(placa), stdin);
+    placa[strcspn(placa, "\n")] = '\0';
+
+    int indice = buscarVeiculoHash(placa);
+    if (indice == -1) {
+        printf("Placa %s nao foi encontrada!\n", placa);
+        return;
+    }
+    Veiculo v;
+    if (buscarVeiculoPorIndice(indice, &v) == 0) {
+        printf("Placa: %s\nModelo: %s\nMarca: %s\nAno: %d\nCor: %s\nCPF do responsavel: %s\n",
+            v.placa, v.modelo, v.marca, v.ano, v.cor, v.cpf_funcionario);
+    } else {
+        printf("Erro ao carregar veiculo no indice %d.\n", indice);
+    }
+}
+
 int carregarTotalVeiculos() {
     FILE *file = fopen("veiculos.dat", "rb");
     if (!file) return 0;
