@@ -100,6 +100,8 @@ void menuVeiculos() {
         printf("\n8. Intercalar Particoes (Árvore de Vencedores)");
         printf("\n9. Listar Veiculos Ordenados (arquivo final)");
         printf("\n10. Ordenar Veiculos por Selecao por Substituicao");
+        printf("\n11. Construir Indice Hash (Veiculos)");
+        printf("\n12. Buscar Veiculo por Placa (Hash)");
         printf("\n0. Voltar\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
@@ -169,6 +171,12 @@ void menuVeiculos() {
             }
             case 10:
                 ordenarVeiculosPorSelecaoSubstituicao();
+                break;
+            case 11:
+                construirIndiceHashVeiculos();
+                break;
+            case 12:
+                buscarVeiculoPorPlacaHash();
                 break;
             case 0:
                 break;

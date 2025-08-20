@@ -150,3 +150,46 @@
 	<string.h>
 	"veiculos.h"
 
+1754419417 source:c:\users\user\desktop\gestaoveiculos-main\funcionarios.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"funcionarios.h"
+
+1754419417 c:\users\user\desktop\gestaoveiculos-main\funcionarios.h
+
+1754419417 source:c:\users\user\desktop\gestaoveiculos-main\locacoes.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"locacoes.h"
+	"funcionarios.h"
+	"veiculos.h"
+
+1754419417 c:\users\user\desktop\gestaoveiculos-main\locacoes.h
+
+1755622337 c:\users\user\desktop\gestaoveiculos-main\veiculos.h
+
+1754419417 source:c:\users\user\desktop\gestaoveiculos-main\main.c
+	<stdio.h>
+	<stdlib.h>
+	"funcionarios.h"
+	"veiculos.h"
+	"locacoes.h"
+
+1754419417 source:c:\users\user\desktop\gestaoveiculos-main\particiona_veiculos.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"veiculos.h"
+
+1754419417 source:c:\users\user\desktop\gestaoveiculos-main\veiculos.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"veiculos.h"
+	"funcionarios.h"
+

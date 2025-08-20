@@ -27,4 +27,9 @@ void intercalacao_arvore_vencedores(int qtd_particoes, const char *saida_final);
 Veiculo* le_veiculo(FILE *arq);
 void imprime_veiculo(Veiculo *v);
 
+typedef struct HashVeiculos HashVeiculos;
+void construirIndiceHashVeiculos();
+int buscarVeiculoHash(const char *placa);
+void buscarVeiculoPorPlacaHash();
+
 #endif // VEICULOS_H
