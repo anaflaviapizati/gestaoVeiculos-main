@@ -97,15 +97,19 @@ void menuVeiculos() {
         printf("\n5. Gerar Veiculos Aleatorios");
         printf("\n6. Gerar Particoes Ordenadas (Selecao por Substituicao)");
         printf("\n7. Imprimir Particoes Geradas");
-        printf("\n8. Intercalar Particoes (Árvore de Vencedores)");
+        printf("\n8. Intercalar Particoes (Arvore de Vencedores)");
         printf("\n9. Listar Veiculos Ordenados (arquivo final)");
         printf("\n10. Ordenar Veiculos por Selecao por Substituicao");
-        printf("\n11. Construir Indice Hash (Veiculos)");
+        printf("\n11. Construir Indice Hash");
         printf("\n12. Buscar Veiculo por Placa (Hash)");
+        printf("\n13. Inserir Veiculo (Hash)");
+        printf("\n14. Remover Veiculo (Hash)");
+        printf("\n15. Criar veiculos aleatorios (hash)");
         printf("\n0. Voltar\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
         getchar();
+
         switch(opcao) {
             case 1:
                 adicionarVeiculo();
@@ -173,10 +177,22 @@ void menuVeiculos() {
                 ordenarVeiculosPorSelecaoSubstituicao();
                 break;
             case 11:
-                construirIndiceHashVeiculos();
+                if (hash_inicializar())
+                    printf("Indice hash inicializado com sucesso!\n");
+                else
+                    printf("Erro ao inicializar indice hash!\n");
                 break;
             case 12:
-                buscarVeiculoPorPlacaHash();
+                menu_buscar_hash();
+                break;
+            case 13:
+                menu_inserir_hash();
+                break;
+            case 14:
+                menu_remover_hash();
+                break;
+            case 15:
+                gerarVeiculosHashAleatorios(1000);
                 break;
             case 0:
                 break;
