@@ -10,6 +10,19 @@ void menuVeiculos();
 void menuLocacoes();
 
 int main() {
+    FILE *f = fopen(HASH_BASE_ARQUIVO, "rb");
+    if (!f) {
+        printf("Arquivos de hash nao encontrados. Criando novos arquivos...\n");
+        if (hash_inicializar()) {
+            printf("Arquivos de hash criados com sucesso!\n");
+            hash_construir_de_veiculos();
+        } else {
+            printf("Erro ao criar arquivos de hash!\n");
+        }
+    } else {
+        fclose(f);
+    }
+
     menuPrincipal();
     return 0;
 }
@@ -17,7 +30,7 @@ int main() {
 void menuPrincipal() {
     int opcao;
     do {
-        printf("\n==== Sistema de Gestao de Veiculos ====" );
+        printf("\n==== Sistema de Gestao de Veiculos ====");
         printf("\n1. Gerenciar Funcionarios");
         printf("\n2. Gerenciar Veiculos");
         printf("\n3. Gerenciar Locacoes");
@@ -58,18 +71,10 @@ void menuFuncionarios() {
         scanf("%d", &opcao);
         getchar();
         switch(opcao) {
-            case 1:
-                adicionarFuncionario();
-                break;
-            case 2:
-                removerFuncionario();
-                break;
-            case 3:
-                listarFuncionarios();
-                break;
-            case 4:
-                ordenarFuncionariosPorCPF();
-                break;
+            case 1: adicionarFuncionario(); break;
+            case 2: removerFuncionario(); break;
+            case 3: listarFuncionarios(); break;
+            case 4: ordenarFuncionariosPorCPF(); break;
             case 5: {
                 int qtd;
                 printf("Quantos funcionarios deseja gerar? ");
@@ -78,10 +83,8 @@ void menuFuncionarios() {
                 gerarFuncionariosAleatorios(qtd);
                 break;
             }
-            case 0:
-                break;
-            default:
-                printf("Opcao invalida!\n");
+            case 0: break;
+            default: printf("Opcao invalida!\n");
         }
     } while(opcao != 0);
 }
@@ -111,18 +114,10 @@ void menuVeiculos() {
         getchar();
 
         switch(opcao) {
-            case 1:
-                adicionarVeiculo();
-                break;
-            case 2:
-                removerVeiculo();
-                break;
-            case 3:
-                listarVeiculos();
-                break;
-            case 4:
-                ordenarVeiculosPorPlaca();
-                break;
+            case 1: adicionarVeiculo(); break;
+            case 2: removerVeiculo(); break;
+            case 3: listarVeiculos(); break;
+            case 4: ordenarVeiculosPorPlaca(); break;
             case 5: {
                 int qtd;
                 printf("Quantos veiculos deseja gerar? ");
@@ -133,10 +128,7 @@ void menuVeiculos() {
             }
             case 6: {
                 FILE *arq = fopen("veiculos.dat", "rb");
-                if (!arq) {
-                    printf("Erro ao abrir veiculos.dat\n");
-                    break;
-                }
+                if (!arq) { printf("Erro ao abrir veiculos.dat\n"); break; }
                 int qtd_particoes = selecao_por_substituicao_veiculos(arq, 5);
                 fclose(arq);
                 printf("%d particoes geradas com sucesso!\n", qtd_particoes);
@@ -160,12 +152,9 @@ void menuVeiculos() {
             }
             case 9: {
                 FILE *f = fopen("veiculos_ordenado.dat", "rb");
-                if (!f) {
-                    printf("Arquivo veiculos_ordenado.dat nao encontrado.\n");
-                    break;
-                }
+                if (!f) { printf("Arquivo veiculos_ordenado.dat nao encontrado.\n"); break; }
                 Veiculo *v;
-                printf("\n==== Veiculos Ordenados ====");
+                printf("\n==== Veiculos Ordenados ====\n");
                 while ((v = le_veiculo(f)) != NULL) {
                     imprime_veiculo(v);
                     free(v);
@@ -173,31 +162,20 @@ void menuVeiculos() {
                 fclose(f);
                 break;
             }
-            case 10:
-                ordenarVeiculosPorSelecaoSubstituicao();
-                break;
+            case 10: ordenarVeiculosPorSelecaoSubstituicao(); break;
             case 11:
-                if (hash_inicializar())
+                if (hash_inicializar()) {
                     printf("Indice hash inicializado com sucesso!\n");
-                else
+                    hash_construir_de_veiculos();
+                } else
                     printf("Erro ao inicializar indice hash!\n");
                 break;
-            case 12:
-                menu_buscar_hash();
-                break;
-            case 13:
-                menu_inserir_hash();
-                break;
-            case 14:
-                menu_remover_hash();
-                break;
-            case 15:
-                gerarVeiculosHashAleatorios(1000);
-                break;
-            case 0:
-                break;
-            default:
-                printf("Opcao invalida!\n");
+            case 12: menu_buscar_hash(); break;
+            case 13: menu_inserir_hash(); break;
+            case 14: menu_remover_hash(); break;
+            case 15: gerarVeiculosHashAleatorios(1000); break;
+            case 0: break;
+            default: printf("Opcao invalida!\n");
         }
     } while(opcao != 0);
 }
@@ -219,27 +197,13 @@ void menuLocacoes() {
         scanf("%d", &opcao);
         getchar();
         switch(opcao) {
-            case 1:
-                criarLocacao();
-                break;
-            case 2:
-                finalizarLocacao();
-                break;
-            case 3:
-                listarLocacoes();
-                break;
-            case 4:
-                listarLocacoesPorFuncionario();
-                break;
-            case 5:
-                listarLocacoesPorVeiculo();
-                break;
-            case 6:
-                ordenarLocacoesPorData();
-                break;
-            case 7:
-                ordenarLocacoesPorCPFPlaca();
-                break;
+            case 1: criarLocacao(); break;
+            case 2: finalizarLocacao(); break;
+            case 3: listarLocacoes(); break;
+            case 4: listarLocacoesPorFuncionario(); break;
+            case 5: listarLocacoesPorVeiculo(); break;
+            case 6: ordenarLocacoesPorData(); break;
+            case 7: ordenarLocacoesPorCPFPlaca(); break;
             case 8: {
                 int qtd;
                 printf("Quantas locacoes deseja gerar? ");
@@ -248,10 +212,8 @@ void menuLocacoes() {
                 gerarLocacoesAleatorias(qtd);
                 break;
             }
-            case 0:
-                break;
-            default:
-                printf("Opcao invalida!\n");
+            case 0: break;
+            default: printf("Opcao invalida!\n");
         }
     } while(opcao != 0);
 }

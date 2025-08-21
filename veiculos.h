@@ -1,10 +1,15 @@
 #ifndef VEICULOS_H
 #define VEICULOS_H
-#define HASH_ARQUIVO   "hash_veiculos.dat"
-#define TAM_TABELA     10007
-#define SLOT_VAZIO     0
-#define SLOT_OCUPADO   1
-#define SLOT_REMOVIDO (-1)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define HASH_BASE_ARQUIVO   "hash_veiculos.dat"
+#define HASH_LISTA_ARQUIVO  "hash_listas.dat"
+#define TAM_TABELA          10007
+#define NULO                -1
+
 
 typedef struct {
     char placa[10];
@@ -15,15 +20,10 @@ typedef struct {
     char cpf_funcionario[15];
 } Veiculo;
 
-typedef struct {
-    char placa[10];
-    char modelo[50];
-    char marca[50];
-    int  ano;
-    char cor[20];
-    char cpf_funcionario[15];
-    int  ocupado;
-} RegistroHash;
+typedef struct NoHash {
+    Veiculo v;
+    long long prox;  
+} NoHash;
 
 void adicionarVeiculo();
 void removerVeiculo();
@@ -43,11 +43,10 @@ Veiculo* le_veiculo(FILE *arq);
 void imprime_veiculo(Veiculo *v);
 
 unsigned int hashPlaca(const char *placa);
-int hash_inicializar();
-int hash_inserir(const Veiculo *v);
-int hash_buscar(const char *placa, Veiculo *out);
-int hash_remover(const char *placa);
-void gerarVeiculosHashAleatorios(int quantidade);
-void hash_imprime_slot(int pos);
+int  hash_inicializar();
+int  hash_inserir(const Veiculo *v);
+int  hash_buscar(const char *placa, Veiculo *out);
+int  hash_remover(const char *placa);
+void hash_listar();
 
-#endif /* VEICULOS_H */
+#endif
