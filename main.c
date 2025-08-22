@@ -3,6 +3,7 @@
 #include "funcionarios.h"
 #include "veiculos.h"
 #include "locacoes.h"
+#include "hash.h"
 
 void menuPrincipal();
 void menuFuncionarios();
@@ -10,19 +11,6 @@ void menuVeiculos();
 void menuLocacoes();
 
 int main() {
-    FILE *f = fopen(HASH_BASE_ARQUIVO, "rb");
-    if (!f) {
-        printf("Arquivos de hash nao encontrados. Criando novos arquivos...\n");
-        if (hash_inicializar()) {
-            printf("Arquivos de hash criados com sucesso!\n");
-            hash_construir_de_veiculos();
-        } else {
-            printf("Erro ao criar arquivos de hash!\n");
-        }
-    } else {
-        fclose(f);
-    }
-
     menuPrincipal();
     return 0;
 }
@@ -103,21 +91,25 @@ void menuVeiculos() {
         printf("\n8. Intercalar Particoes (Arvore de Vencedores)");
         printf("\n9. Listar Veiculos Ordenados (arquivo final)");
         printf("\n10. Ordenar Veiculos por Selecao por Substituicao");
-        printf("\n11. Construir Indice Hash");
+        printf("\n11. Inicializar Tabela Hash");
         printf("\n12. Buscar Veiculo por Placa (Hash)");
-        printf("\n13. Inserir Veiculo (Hash)");
-        printf("\n14. Remover Veiculo (Hash)");
-        printf("\n15. Criar veiculos aleatorios (hash)");
+        printf("\n13. Inserir Veiculo no Hash");
+        printf("\n14. Remover Veiculo do Hash");
+        printf("\n15. Imprimir Tabela Hash");
         printf("\n0. Voltar\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
         getchar();
 
         switch(opcao) {
-            case 1: adicionarVeiculo(); break;
-            case 2: removerVeiculo(); break;
-            case 3: listarVeiculos(); break;
-            case 4: ordenarVeiculosPorPlaca(); break;
+            case 1: adicionarVeiculo();
+            break;
+            case 2: removerVeiculo();
+            break;
+            case 3: listarVeiculos();
+            break;
+            case 4: ordenarVeiculosPorPlaca();
+            break;
             case 5: {
                 int qtd;
                 printf("Quantos veiculos deseja gerar? ");
@@ -162,19 +154,104 @@ void menuVeiculos() {
                 fclose(f);
                 break;
             }
-            case 10: ordenarVeiculosPorSelecaoSubstituicao(); break;
-            case 11:
-                if (hash_inicializar()) {
-                    printf("Indice hash inicializado com sucesso!\n");
-                    hash_construir_de_veiculos();
-                } else
-                    printf("Erro ao inicializar indice hash!\n");
+            case 10: ordenarVeiculosPorSelecaoSubstituicao();
+            break;
+            case 11: {
+                FILE *tabHash = fopen("hash_veiculos.dat", "wb+");
+                if (!tabHash) { printf("Erro ao criar tabela hash!\n"); break; }
+                initTabela(tabHash);
+                fclose(tabHash);
+                FILE *listas = fopen("hash_listas.dat", "wb");
+                if (listas) fclose(listas);
+                printf("Tabela hash inicializada.\n");
                 break;
-            case 12: menu_buscar_hash(); break;
-            case 13: menu_inserir_hash(); break;
-            case 14: menu_remover_hash(); break;
-            case 15: gerarVeiculosHashAleatorios(1000); break;
-            case 0: break;
+            }
+            case 12: {
+                char placa[10];
+                printf("Digite a placa para buscar: ");
+                fgets(placa, sizeof(placa), stdin);
+                placa[strcspn(placa, "\n")] = '\0';
+                FILE *arq = fopen("hash_listas.dat", "rb");
+                FILE *tabHash = fopen("hash_veiculos.dat", "rb");
+                if (!arq || !tabHash) { if (arq) fclose(arq); if (tabHash) fclose(tabHash); printf("Arquivos nao encontrados!\n"); break; }
+                TVeiculo v;
+                if (buscaVeiculo(arq, tabHash, placa, &v)) {
+                    printf("Veiculo encontrado: %s | %s | %s | %d | %s | %s\n",
+                           v.placa, v.modelo, v.marca, v.ano, v.cor, v.cpf_funcionario);
+                } else {
+                    printf("Veiculo nao encontrado na hash.\n");
+                }
+                fclose(arq);
+                fclose(tabHash);
+                break;
+            }
+            case 13: {
+                char placa[10];
+                printf("Digite a placa do veiculo para inserir no hash: ");
+                fgets(placa, sizeof(placa), stdin);
+                placa[strcspn(placa, "\n")] = '\0';
+                FILE *arq = fopen("hash_listas.dat", "rb+");
+                FILE *tabHash = fopen("hash_veiculos.dat", "rb+");
+                if (!arq || !tabHash) { if (arq) fclose(arq); if (tabHash) fclose(tabHash); printf("Arquivos nao encontrados!\n"); break; }
+                TVeiculo vhash;
+                if (buscaVeiculo(arq, tabHash, placa, &vhash)) {
+                    printf("Veiculo ja existe na hash.\n");
+                    fclose(arq);
+                    fclose(tabHash);
+                    break;
+                }
+                int idxV = buscaSequencialVeiculo(placa);
+                if (idxV == -1) {
+                    printf("Placa nao encontrada em veiculos.dat.\n");
+                    fclose(arq);
+                    fclose(tabHash);
+                    break;
+                }
+                Veiculo vfile;
+                if (buscarVeiculoPorIndice(idxV, &vfile) != 0) {
+                    printf("Falha ao ler veiculo.\n");
+                    fclose(arq);
+                    fclose(tabHash);
+                    break;
+                }
+                TVeiculo v;
+                strcpy(v.placa, vfile.placa);
+                strcpy(v.modelo, vfile.modelo);
+                strcpy(v.marca, vfile.marca);
+                v.ano = vfile.ano;
+                strcpy(v.cor, vfile.cor);
+                strcpy(v.cpf_funcionario, vfile.cpf_funcionario);
+                v.prox = -1;
+                v.ocupado = true;
+                if (insereVeiculo(arq, tabHash, &v)) printf("Veiculo inserido no hash com sucesso!\n");
+                else printf("Erro ao inserir veiculo no hash.\n");
+                fclose(arq);
+                fclose(tabHash);
+                break;
+            }
+            case 14: {
+                char placa[10];
+                printf("Digite a placa do veiculo para remover do hash: ");
+                fgets(placa, sizeof(placa), stdin);
+                placa[strcspn(placa, "\n")] = '\0';
+                FILE *arq = fopen("hash_listas.dat", "rb+");
+                FILE *tabHash = fopen("hash_veiculos.dat", "rb+");
+                if (!arq || !tabHash) { if (arq) fclose(arq); if (tabHash) fclose(tabHash); printf("Arquivos nao encontrados!\n"); break; }
+                if (removeVeiculo(arq, tabHash, placa)) printf("Veiculo removido da hash com sucesso!\n");
+                else printf("Veiculo nao encontrado na hash.\n");
+                fclose(arq);
+                fclose(tabHash);
+                break;
+            }
+            case 15: {
+                FILE *tabHash = fopen("hash_veiculos.dat", "rb");
+                if (!tabHash) { printf("Tabela hash nao encontrada!\n"); break; }
+                printaTabela(tabHash);
+                fclose(tabHash);
+                break;
+            }
+            case 0:
+            break;
             default: printf("Opcao invalida!\n");
         }
     } while(opcao != 0);
